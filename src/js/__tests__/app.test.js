@@ -1,45 +1,20 @@
-import MathChar, { Magician, Daemon } from '../app';
-import Character from '../character';
+import ArrayBufferConverter from '../app';
 
-test('проверка attack', () => {
-  const received = new Magician('Иван', 'Magician', true, 8);
-  expect(received.attack).toEqual(55);
-});
+test('Проверка класса ArrayBufferConverter', () => {
+  function getBuffer() {
+    const data = '{"data":{"user":{"id":1,"name":"Hitman","level":10}}}';
+    return ((input) => {
+      const buffer = new ArrayBuffer(data.length * 2);
+      const bufferView = new Uint16Array(buffer);
+      for (let i = 0; i < input.length; i += 1) {
+        bufferView[i] = input.charCodeAt(i);
+      }
+      return buffer;
+    })(data);
+  }
 
-test('проверка distance', () => {
-  const received = new Magician('Иван', 'Magician', true, 18);
-  expect(received.attack).toEqual(0);
-});
-
-test('проверка stoned false', () => {
-  const received = new Magician('Иван', 'Magician', false, 3);
-  expect(received.attack).toEqual(20);
-});
-
-test('проверка stoned', () => {
-  const received = new Magician('Иван', 'Magician', false, 3);
-  expect(received.stoned).toEqual(false);
-});
-
-test('проверка attack', () => {
-  const received = new Daemon('Иван', 'Daemon', true, 8);
-  expect(received.attack).toEqual(55);
-});
-
-test('проверка длины имени <3', () => {
-  expect(() => {
-    new Character('хз', 'Swordsman', 10, 40);
-  }).toThrow();
-});
-
-test('проверка длины имени >10', () => {
-  expect(() => {
-    new Character('хзuhhgfhfhfjjjsd', 'Swordsman', 10, 40);
-  }).toThrow();
-});
-
-test('проверка string', () => {
-  expect(() => {
-    new Character(7, 'Swordsman', 10, 40);
-  }).toThrow();
+  const test = getBuffer();
+  const received = new ArrayBufferConverter();
+  received.load(test);
+  expect(received.toString()).toBe('{"data":{"user":{"id":1,"name":"Hitman","level":10}}}');
 });
